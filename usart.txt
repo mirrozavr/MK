@@ -1,0 +1,70 @@
+uint8_t str[2];
+	const char BLUEOFF[100] = " The blue diode is off ";
+	const char REDOFF[100] = " The red diode is off ";
+	const char GREENOFF[100] = " The green diode is off ";
+	const char BLUEON[100] = " The blue diode is on ";
+	const char REDON[100] = " The red diode is on ";
+	const char GREENON[100] = " The green diode is on ";
+	
+	struct {
+		uint8_t blue;
+		uint8_t red;
+		uint8_t green;
+	} 
+	color = {0, 0, 0};
+
+while (1)
+  {
+		if (HAL_UART_Receive(&huart1, str, 1, 0) == HAL_OK) continue;
+		
+			if (str[0] == 0xA1)
+		{
+			if (color.blue == 1)
+			{
+				color.blue-=1;
+				HAL_GPIO_WritePin(LD2_GPIO_Port,LD2_Pin,0);
+				HAL_UART_Transmit(&huart1, (uint8_t *)(BLUEOFF), 100, 30);
+			}
+			else
+			{
+				color.blue+=1;
+				HAL_GPIO_WritePin(LD2_GPIO_Port,LD2_Pin,1);
+				HAL_UART_Transmit(&huart1, (uint8_t *)(BLUEON), 100, 30);
+			}
+		}
+		
+			if (str[0] == 0xA2)
+		{
+			if (color.red == 1)
+			{
+				color.red-=1;
+				HAL_GPIO_WritePin(LD3_GPIO_Port,LD3_Pin,0);
+				HAL_UART_Transmit(&huart1, (uint8_t *)(REDOFF), 100, 30);
+			}
+			else
+			{
+				color.red+=1;
+				HAL_GPIO_WritePin(LD3_GPIO_Port,LD3_Pin,1);
+				HAL_UART_Transmit(&huart1, (uint8_t *)(REDON), 100, 30);
+			}
+		}
+		
+		if (str[0] == 0xA3)
+		{
+			if (color.green == 1)
+			{
+				color.green-=1;
+				HAL_GPIO_WritePin(LD1_GPIO_Port,LD1_Pin,0);
+				HAL_UART_Transmit(&huart1, (uint8_t *)(GREENOFF), 100, 30);
+			}
+			else
+			{
+				color.green+=1;
+				HAL_GPIO_WritePin(LD1_GPIO_Port,LD1_Pin,1);
+				HAL_UART_Transmit(&huart1, (uint8_t *)(GREENON), 100, 30);
+			}
+		}
+
+		str[0] = 0;
+	}
+}

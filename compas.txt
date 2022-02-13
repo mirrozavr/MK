@@ -1,0 +1,44 @@
+#define I2C_ADDRESS                                              0x3C
+#define I2C_TIMEOUT                                              100
+#define Button_read HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin)
+
+uint8_t regData[10 ];
+uint8_t regAddress[100];
+double DataX = 0;
+double DataY = 0;
+double DataZ = 0;
+double Axy = 0;
+double Axz = 0;
+double Ayz = 0;
+double xy0 = 0;
+double xz0 = 0;
+double yz0 = 0;
+
+regAddress[0] = 0;
+regAddress[1] = 0;
+regAddress[2] = 0;
+regAddress[3] = 0;
+
+HAL_I2C_Master_Transmit(&hi2c1, I2C_ADDRESS, regAddress, 4, I2C_TIMEOUT);
+HAL_I2C_Master_Transmit(&hi2c1, I2C_ADDRESS, regAddress, 1, I2C_TIMEOUT);
+
+while (1)
+{
+	if(Button_read == 1){
+		xy0 = atan2(DataY, DataX)*57;
+		xz0 = atan2(DataZ, DataX)*57;
+		yz0 = atan2(DataZ, DataY)*57;
+	}
+	regAddress[0] = 3;
+	HAL_I2C_Master_Transmit(&hi2c1, I2C_ADDRESS, regAddress, 1, I2C_TIMEOUT);
+	HAL_I2C_Master_Receive(&hi2c1, I2C_ADDRESS, regData, 6, I2C_TIMEOUT);
+	HAL_Delay(200);
+	DataX = (double)((((uint16_t)regData[0])<<8) | ((uint16_t)regData[1]));
+	DataY = (double)((((uint16_t)regData[2])<<8) | ((uint16_t)regData[3]));
+	DataZ = (double)((((uint16_t)regData[4])<<8) | ((uint16_t)regData[5]));
+		
+	Axy = xy0 - atan2(DataY, DataX)*57;
+	Axz = xz0 - atan2(DataZ, DataX)*57;
+	Ayz = yz0 - atan2(DataZ, DataY)*57;
+	}
+}
