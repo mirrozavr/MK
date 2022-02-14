@@ -1,36 +1,36 @@
-#define ButtonRead() HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin
+#define ButtonRead() HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin)
 
 static void MX_TIM8_Init(void);
-uint8_t state = 0;
-uint8_t counter = 0;
-uint8_t cheсk = 0;
-uint8_t t0 = 0;
-uint8_t dt = 10;
-uint_8_t a = 0;
-
-// HAL_TIM_Base_Start_IT(&htim1)
+uint8_t state = 0; 		// состояние кнопки 1 - нажата
+uint8_t counter = 0; 		// счетчик нажатий
+uint8_t cheсk = 0;		// проверка состояния 1 - ожидается проверка состояния кнопки
+// uint8_t t0 = 0;
+uint8_t dt = 10;		// период проверки состояния кнопки
+uint_8_t a = 0;			// промежуточное состояние кнопки
 
 while (1)
 {
-	if cheсk
-	{
-		if (TIM8->CCR1-t0 >= dt)
-		{
-			if ButtonRead() = a
+	if cheсk					// нужно ли повторно проверять состояние кнопки?
+	{						// повторно проверяем состояние кнопки
+		if (TIM8->CCR1 >= dt)			// прошло ли достаточно времени?
+		{					
+			if ButtonRead() = a		// если через время dt состояние кнопки совпадает с промежуточным
 			{
-				state = a
-				cheсk = 0
+				state = a		// меняем состояние кнопки
+				cheсk = 0		// выключаем ожидание проверки
+				??			// останавливаем таймер
 			}
 		}
 	}
 
-	else
+	else						// повторно не проверяем состояние кнопки
 	{
-		if ButtonRead() != state
+		if ButtonRead() != state		// первично проверяем состояние кнопки
 		{
-		cheсk = 1
-		a = ButtonRead()
-		t0 = TIM8->CCR1
+		cheсk = 1				// включаем ожидание проверки
+		a = ButtonRead()			// запоминаем промежуточное состояние
+		HAL_TIM_Base_Start_IT(&htim8)		// запускаем таймер
 		}		
 
 	}
+}
