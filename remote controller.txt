@@ -24,16 +24,16 @@ void I2C_send(uint8_t data, uint8_t flags)
 	uint8_t lo = (data << 4) & 0xF0;         						// младший бит
 	                                          
 	uint8_t data_arr[4];
-	data_arr[0] = up|flags|BACKLIGHT|PIN_EN; 
+	data_arr[0] = up|flags|BACKLIGHT|PIN_EN; 						// преобразуем данные
 	data_arr[1] = up|flags|BACKLIGHT;         
 	data_arr[2] = lo|flags|BACKLIGHT|PIN_EN;
 	data_arr[3] = lo|flags|BACKLIGHT;
 
-	HAL_I2C_Master_Transmit(&hi2c1, LCD_ADDR, data_arr, sizeof(data_arr), HAL_MAX_DELAY);	// говорим, что сейчас будем читать данные
+	HAL_I2C_Master_Transmit(&hi2c1, LCD_ADDR, data_arr, sizeof(data_arr), HAL_MAX_DELAY);	// отправляем даннные
 	HAL_Delay(LCD_DELAY_MS);								// устанавливаем задержку, чтобы данные точно успели поступить
 }
 
-void LCD_SendString(char *str)									// отправляем строку
+void LCD_SendString(char *str)									// отправляем строку побуквенно с помощью предыдущей функции
 {
 	while(*str) { 
 		I2C_send((uint8_t)(*str), 1);              
@@ -41,7 +41,7 @@ void LCD_SendString(char *str)									// отправляем строку
     }
 }
 
-void lcd_put_cur(int row, int col)
+void lcd_put_cur(int row, int col)								// заполняем экран
 {
     switch (row)
     {
@@ -89,7 +89,7 @@ uint16_t y = 0;
 
 while (1)
 {
-	HAL_ADCEx_InjectedStart(&hadc1);
+	HAL_ADCEx_InjectedStart(&hadc1);							// Разрешает работу АЦП и запускает преобразование инжектированной группы
 	HAL_ADC_PollForConversion(&hadc1, 50);
 	
 	y = HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1)/820;
