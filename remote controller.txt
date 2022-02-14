@@ -1,4 +1,4 @@
-#define LCD_ADDR 																								 0x4E       
+#define LCD_ADDR 						 0x4E       
 #define I2C_ADDRESS_READ                                         0x4F
 #define PIN_RS                                                 1 << 0       
 #define PIN_EN                                                 1 << 2        
@@ -73,7 +73,7 @@ I2C_send(0x01,0);   // clear
 I2C_send(0x80,0);  
 LCD_SendString("  Hello from");
 I2C_send(0xC0,0);  
-LCD_SendString(" DANILA RIAZANOV");
+LCD_SendString(" Julia");
 I2C_send(0x94,0);
 
 HAL_Delay(2000);
