@@ -66,9 +66,10 @@ char str[50];
 
 I2C_send(0x30,0); 										// преобразовываем в 8-битному формату
 I2C_send(0x02,0);  										// устанавливаем курсор на начало строки
-I2C_send(0x0C,0);   										// нормальный режим работы
+I2C_send(0x0C,0);   										// следующая строка
 I2C_send(0x01,0);   										// очищаем
-	
+												// 72-85 строки - комбинация изложенных выше команд:
+												// подаем данные, выводим их на экран и очищаем его
 I2C_send(0x80,0);  
 LCD_SendString("  Hello from");
 I2C_send(0xC0,0);  
@@ -89,14 +90,14 @@ uint16_t y = 0;
 
 while (1)
 {
-	HAL_ADCEx_InjectedStart(&hadc1);							// Разрешает работу АЦП и запускает преобразование инжектированной группы
-	HAL_ADC_PollForConversion(&hadc1, 50);
+	HAL_ADCEx_InjectedStart(&hadc1);							// разрешаем работу АЦП и запускаем опрос инжектированных каналов
+	HAL_ADC_PollForConversion(&hadc1, 50);							// ждём окончания
 	
-	y = HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1)/820;
-	x = HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_2)/55;		
-		
-	lcd_put_cur(y, 14 - x);
-	LCD_SendString("A");
-	HAL_Delay(60);
-	I2C_send(0x01,0); 
+	y = HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1)/820;			// результат опроса каждого канала записывается в свой регистр,
+	x = HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_2)/55;				// а мы забираем его и копируем в переменную;
+												// также проводим калибровку по заданным параметрам
+	lcd_put_cur(y, 14 - x);									// выбираем такие аргументы для функции, чтобы все влезало в экран
+	LCD_SendString("A");									// подаем данные
+	HAL_Delay(60);										// ставим задержку, чтобы все данные успели считаться
+	I2C_send(0x01,0); 									// очищаем экран
 }
