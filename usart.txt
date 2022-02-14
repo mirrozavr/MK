@@ -1,39 +1,39 @@
 uint8_t str[2];
-	const char BLUEOFF[100] = " The blue diode is off ";
-	const char REDOFF[100] = " The red diode is off ";
-	const char GREENOFF[100] = " The green diode is off ";
-	const char BLUEON[100] = " The blue diode is on ";
-	const char REDON[100] = " The red diode is on ";
-	const char GREENON[100] = " The green diode is on ";
+	const char BLUEOFF[40] = " BLUE IS OFF ";
+	const char REDOFF[40] = " RED IS OFF ";
+	const char GREENOFF[40] = " GREEN IS OFF ";
+	const char BLUEON[40] = " BLUE IS ON ";
+	const char REDON[40] = " RED IS ON ";
+	const char GREENON[40] = " GREEN IS ON ";
 	
 	struct {
 		uint8_t blue;
 		uint8_t red;
 		uint8_t green;
-	} 
+	}
 	color = {0, 0, 0};
 
 while (1)
   {
-		if (HAL_UART_Receive(&huart1, str, 1, 0) == HAL_OK) continue;
+		if (HAL_UART_Receive(&huart1, str, 1, 0) == HAL_OK) continue;			// пришло ли что-то на вход?
 		
 			if (str[0] == 0xA1)
 		{
-			if (color.blue == 1)
-			{
-				color.blue-=1;
-				HAL_GPIO_WritePin(LD2_GPIO_Port,LD2_Pin,0);
-				HAL_UART_Transmit(&huart1, (uint8_t *)(BLUEOFF), 100, 30);
+			if (color.blue == 1)							// проверяем, включен ли синий диод
+			{									
+				color.blue-=1;							// если диод включен, то уменьшаем его значение в поле структуры
+				HAL_GPIO_WritePin(LD2_GPIO_Port,LD2_Pin,0);			// выключаем синий диод
+				HAL_UART_Transmit(&huart1, (uint8_t *)(BLUEOFF), 100, 30);	// получаем ответ, что синий выключен
 			}
-			else
+			else									// если синий диод выключен
 			{
-				color.blue+=1;
-				HAL_GPIO_WritePin(LD2_GPIO_Port,LD2_Pin,1);
-				HAL_UART_Transmit(&huart1, (uint8_t *)(BLUEON), 100, 30);
+				color.blue+=1;							// увеличиваем значение синего диода в поле структуры
+				HAL_GPIO_WritePin(LD2_GPIO_Port,LD2_Pin,1);			// включаем диод
+				HAL_UART_Transmit(&huart1, (uint8_t *)(BLUEON), 100, 30);	// получаем ответ, что синий включен
 			}
 		}
 		
-			if (str[0] == 0xA2)
+			if (str[0] == 0xA2)							// аналогичный алгоритм проводим с красным и синим диодами
 		{
 			if (color.red == 1)
 			{
@@ -65,6 +65,6 @@ while (1)
 			}
 		}
 
-		str[0] = 0;
+		str[0] = 0;									// очищаем буфер приема
 	}
 }
