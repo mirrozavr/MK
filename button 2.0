@@ -5,7 +5,7 @@ uint8_t result = 0
 
 int contact_bounce(void)
 {
-	if(button_state == 0)
+	if(button_state == 0)				
 	{
 		if(button_count < 1000)
 		{
@@ -15,7 +15,7 @@ int contact_bounce(void)
 		{
 			if(button_state == 0)
 			{
-				button_state = 1;
+				button_state = 1;			// кнопка гарантированно нажата
 				return 1;
 			}
 		}
@@ -30,7 +30,7 @@ int contact_bounce(void)
 		{
 			if(button_state == 1)
 			{
-				button_state = 0;
+				button_state = 0;			// кнопка гарантированно не нажата
 				return 0;
 			}
 		}
@@ -40,14 +40,14 @@ int contact_bounce(void)
 
 while (1)
 {
-	button_state = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
-	result = contact_bounce();
+	button_state = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);		// в постоянном цикле анализируем состояние кнопки на выводе PC_13
+	result = contact_bounce();					// по результату выясняем состояние кнопки: 1 - кнопка нажата, 0 - кнопка не нажата
 	if(result == 0)
 	{
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);	// кнопка отключается
 	}
 	else
 	{
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);	// кнопка включается
 	}
 }
